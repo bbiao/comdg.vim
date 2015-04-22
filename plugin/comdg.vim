@@ -1,6 +1,8 @@
 
-" Date: 2008-10-31
-" Version: 1.0.3
+" A simple script go generate document for C/C++ function
+" Author: sheny@baidu.com
+" Date: 2006-07-09
+" Version: 0.1
 " TODO: 1 like :  if (!doc) , not valid param info, fixed but param info like
 "                 void  aaa(void), failed
 " 
@@ -393,7 +395,7 @@ function! <SID>GetDoxygenStyleDoc(fun_info, leading_blank)
 	"gen param part
 	while(strlen(type)>0 && strlen(name)>0)
 
-		let doc = doc . a:leading_blank." * @param [in/out] ".name." "."  : ".type.  "\n"
+		let doc = doc . a:leading_blank." * @param [in/out] ".name." ".": ".type.  "\n"
 		let type = <SID>GetNthItemFromList(a:fun_info, idx, ",")
 		let idx = idx + 1
 		let name = <SID>GetNthItemFromList(a:fun_info, idx, ",")
@@ -441,26 +443,28 @@ function! <SID>GetVer()
 endfunction
 
 function! <SID>GetEmail()
-  return "com@baidu.com"
+  return "zhangbiao@baidu.com"
 endfunction
 
 function! <SID>GetDoxFileHeader(leading_blank)
 
 	let doc = ""
   let doc = doc. a:leading_blank."/***************************************************************************\n"
-	let doc = doc. a:leading_blank." * \n"
+	let doc = doc. a:leading_blank." *\n"
   let doc = doc. a:leading_blank." * Copyright (c) ".<SID>GetYear()." Baidu.com, Inc. All Rights Reserved\n"
-  let doc = doc. a:leading_blank." * \n"
+  let doc = doc. a:leading_blank." * \$Id\$\n"
+  let doc = doc. a:leading_blank." *\n"
   let doc = doc. a:leading_blank." **************************************************************************/\n"
   let doc = doc. a:leading_blank." \n \n \n"
   let doc = doc. a:leading_blank."/**\n"
 	let doc = doc. a:leading_blank." * @file ".<SID>GetFileName()."\n"
 	let doc = doc. a:leading_blank." * @author ".<SID>GetUserName()."(".<SID>GetEmail().")\n"
 	let doc = doc. a:leading_blank." * @date ".<SID>GetDate()."\n"
-	let doc = doc. a:leading_blank." * @brief \n"
-	let doc = doc. a:leading_blank." *  \n"
+	let doc = doc. a:leading_blank." * @version \$Revision\$\n"
+	let doc = doc. a:leading_blank." * @brief\n"
+	let doc = doc. a:leading_blank." *\n"
 	let doc = doc. a:leading_blank." **/\n"
-  call append(line('$'), "/* vim: set expandtab ts=4 sw=4 sts=4 tw=100 */")
+  call append(line('$'), "/* vim: set et ts=4 sw=4 sts=4 tw=100: */")
 	return doc
 
 
@@ -470,13 +474,13 @@ function! <SID>GetDoxMainpage(leading_blank)
 
 	let doc = ""
 	let doc = doc.a:leading_blank."/**\n"
-	let doc = doc.a:leading_blank."* @mainpage xxx介绍及使用方法 \n"
+	let doc = doc.a:leading_blank."* @mainpage xxx介绍及使用方法\n"
 	let doc = doc.a:leading_blank."* \<h2>概述</h2>\n"
 	let doc = doc.a:leading_blank."* <p>xxxxxxxxxxx</p>\n"
 	let doc = doc.a:leading_blank."* <ol></ol>\n"
 	let doc = doc.a:leading_blank."* <h2>使用方法</h2>\n"
 	let doc = doc.a:leading_blank."* <hr>\n"
-	let doc = doc.a:leading_blank."* <p>问题请发送<a href=\"mailto:".<SID>GetEmail()."?subject=[dilib]\">.".<SID>GetEmail()."</a></p>\n"
+	let doc = doc.a:leading_blank."* <p>问题请发送至<a href=\"mailto:".<SID>GetEmail()."?subject=[dilib]\">.".<SID>GetEmail()."</a></p>\n"
 	let doc = doc. a:leading_blank."*/\n"
 	return doc
 endfunction
@@ -588,8 +592,8 @@ function! <SID>GetDoxFH(type)
 		endwhile
 	endif
 
-    exec l:synopsisLine
-    exec "normal " . l:synopsisLine . "|"
+    exec l:synopsisCol
+    exec "normal " . l:synopsisCol . "|"
     startinsert!
 
 endfunction
@@ -601,15 +605,6 @@ function! <SID>ValComment()
   call cursor(line('.'), col('$')-9)
   
 endfunction
-
-function! <SID>ValComment1()
-  
-  call cursor(line('.'), col('$'))
-  exec "normal! a\t\t  ///<  "
-  call cursor(line('.'), col('$')-2)
-  
-endfunction
-
 
 function! <SID>InsertPHPHead()
 
@@ -644,110 +639,12 @@ function! <SID>InsertHeadFormat()
   call append(line('$')-2, "#endif  //__". s. "_")
 endfunction
 
-function! <SID>AddGroup()
-  let current = line('.')-1
- " exec "normal! a\t/** @addtogroup groupname \n\t*\n\t* @{\n\t*/\n\n\t"
-   call  append(current,"\t/** @addtogroup groupname")
-  let current = current+1
-  call append(current,"\t*")
-  let current = current+1
-  call append(current,"\t* @{")
-  let current = current +1
-  call append(current,"\t*/")
-  let current = current +1
-  "call append(current,"\n")
-  let current =current +1
- " call append(current,"\\n")
-  exec "normal! a\n"
-  let current = current +1
-  call append(current,"\t/** @} */")
-  call cursor(line('.'), col('$')-9) 
-endfunction
-function! <SID>InsertHeadFormatH()
-  let s = <SID>GetFileName()
-  call append(17,"#include<cxxtest/TestSuite.h>")
-  call append(18,"#include<stdio.h>")
-  call append(19,"#include<iostream>")
-  let s = substitute(s, "[\.h]", "_", "g")
-  let s = substitute(s,"__","","g")
-  call append(21,"class ".s. " : public CxxTest::TestSuite")
-  call append(22,"{")
-  let s = toupper(<SID>GetFileName())
-  let s = substitute(s, "[\.]", "_", "g")
-  call append(23,"public:")
-  call append(25,"};")
-  call cursor(25,4)
-"  call <SID>GenFuncDoc()
-  call append(15, "#ifndef  __". s. "_")
-  call append(16, "#define  __". s. "_")
-  call append(40, "#endif  //__". s. "_")
-  call cursor(line('.')-2,col('$')+9)
-endfunction
-
-function! <SID>InsertHeadFormatCPP()
-  let s = <SID>GetFileName()
-  call append(17,"#include<gtest/gtest.h>")
-  call append(18,"#include<stdio.h>")
-  call append(19,"#include<iostream>")
-  let s = substitute(s, "[\.h]", "_", "g")
-  let s = substitute(s,"__","","g")
-"  call append(21,"TEST(){")
-"  call append(24,"}")
-"  call append(23,"class ".s. " : public CxxTest::TestSuite")
- " call append(24,"{")
- " let s = toupper(<SID>GetFileName())
-  "let s = substitute(s, "[\.]", "_", "g")
- " call append(25,"public:")
- " call append(27,"}")
-  call append(15, "#ifndef  __". s. "_")
-  call append(16, "#define  __". s. "_")
-  call cursor(line('.')+8,4)
-"  call <SID>GenFuncDocGtest()
-  call append(38, "#endif  //__". s. "_")
-  call cursor(line('.')-2,col('$')+9)
-endfunction
-function! <SID>GenFuncDoc()
-" let cur_line = line('.')
-" let leadingblank = getline(cur_line)
-" call append(cur_line,leadingblank."TEST(){")
-" let cur_line = cur_line+1
-" call append(cur_line,leadingblank."}")
-" call cursor(line('.')+1,col('$'))
- call <SID>FuncDoc()
-endfunction 
-function! <SID>FuncDoc()
- let cur_line = line(".")
- let first_line = getline(cur_line)
- let leading_blank = matchstr(first_line, '\(\s*\)')
-" call cursor(line("."),col("$"))
- let cur_line = cur_line -1
- call append(cur_line,leading_blank."/**")
- let cur_line = cur_line +1
- call append(cur_line,leading_blank."*")
- let cur_line = cur_line +1
- call append(cur_line,leading_blank."*@brief")
- let cur_line = cur_line +1
- call append(cur_line,leading_blank."*@expected")
- let cur_line = cur_line +1
- call append(cur_line,leading_blank."*@actual")
- let cur_line = cur_line +1
- call append(cur_line,leading_blank."*@author ".<SID>GetUserName())
- let cur_line = cur_line +1
- call append(cur_line,leading_blank."*@note")
- let cur_line = cur_line +1
- call append(cur_line,leading_blank."*")
- let cur_line = cur_line +1
- call append(cur_line,leading_blank."*/")
-endfunction
 map <F2> :call <SID>GenDoc()<CR>
-map <F3> :call <SID>GenFuncDoc()<CR>
-map <F4> :call <SID>ValComment1()<CR>
-map <F5> :call <SID>AddGroup()<CR>
-autocmd FileType c,cc,cpp,java,awk,vim,sed,php nnoremap <silent> <Leader>a :call <SID>GetDoxFH(0)<CR>
-autocmd FileType c,cc,cpp,java,awk,vim,sed,php nnoremap <silent> <Leader>s :call <SID>GetDoxFH(1)<CR>
-autocmd FileType c,cc,cpp,java,awk,vim,sed,php nnoremap <silent> <Leader>d :call <SID>GetDoxFH(2)<CR>
-autocmd FileType c,cc,cpp,java,awk,vim,sed,php nnoremap <silent> <Leader>f :call <SID>GetDoxFH(3)<CR>
+map <F3> :call <SID>ValComment()<CR>
+autocmd FileType c,cpp,java,sh,awk,vim,sed,perl,python,php nnoremap <silent> <Leader>a :call <SID>GetDoxFH(0)<CR>
+autocmd FileType c,cpp,java,sh,awk,vim,sed,perl,python,php nnoremap <silent> <Leader>s :call <SID>GetDoxFH(1)<CR>
+autocmd FileType c,cpp,java,sh,awk,vim,sed,perl,python,php nnoremap <silent> <Leader>d :call <SID>GetDoxFH(2)<CR>
+autocmd FileType c,cpp,java,sh,awk,vim,sed,perl,python,php nnoremap <silent> <Leader>f :call <SID>GetDoxFH(3)<CR>
 autocmd BufNewFile *.h,*.cpp,*.c,*.cc,*.java,*.py,*.pl :call <SID>InsertFormat()
 autocmd BufNewFile *.php :call <SID>InsertPHPHead()
-autocmd BufNewFile *.h :call <SID>InsertHeadFormatH()
-autocmd BufNewFile *.cpp :call <SID>InsertHeadFormatCPP()
+autocmd BufNewFile *h :call <SID>InsertHeadFormat()
