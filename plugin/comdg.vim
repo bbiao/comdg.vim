@@ -641,10 +641,10 @@ endfunction
 
 map <F2> :call <SID>GenDoc()<CR>
 map <F3> :call <SID>ValComment()<CR>
-autocmd FileType c,cpp,java,sh,awk,vim,sed,perl,python,php nnoremap <silent> <Leader>a :call <SID>GetDoxFH(0)<CR>
-autocmd FileType c,cpp,java,sh,awk,vim,sed,perl,python,php nnoremap <silent> <Leader>s :call <SID>GetDoxFH(1)<CR>
-autocmd FileType c,cpp,java,sh,awk,vim,sed,perl,python,php nnoremap <silent> <Leader>d :call <SID>GetDoxFH(2)<CR>
-autocmd FileType c,cpp,java,sh,awk,vim,sed,perl,python,php nnoremap <silent> <Leader>f :call <SID>GetDoxFH(3)<CR>
+autocmd FileType c,cpp,java,sh,awk,vim,sed,perl,python,php nnoremap <silent> <Leader>A :call <SID>GetDoxFH(0)<CR>
+autocmd FileType c,cpp,java,sh,awk,vim,sed,perl,python,php nnoremap <silent> <Leader>S :call <SID>GetDoxFH(1)<CR>
+autocmd FileType c,cpp,java,sh,awk,vim,sed,perl,python,php nnoremap <silent> <Leader>D :call <SID>GetDoxFH(2)<CR>
+autocmd FileType c,cpp,java,sh,awk,vim,sed,perl,python,php nnoremap <silent> <Leader>F :call <SID>GetDoxFH(3)<CR>
 autocmd BufNewFile *.h,*.cpp,*.c,*.cc,*.java,*.py,*.pl :call <SID>InsertFormat()
 autocmd BufNewFile *.php :call <SID>InsertPHPHead()
 autocmd BufNewFile *h :call <SID>InsertHeadFormat()
